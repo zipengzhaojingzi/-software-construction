@@ -100,6 +100,7 @@ public class LoginController {
                 user.setUserAccount(Account);
                 user.setUserName(Name);
                 user.setUserPassword(Password);
+                user.setIdentity("user");
                 userService.save(user);
                 session.setAttribute("Name",user.getUserName());
                 session.setAttribute("Id",user.getUserId());
