@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <script src="/iconfont/iconfont.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <style type="text/css">
+        body {
+            background: url("/img/login/login-3.jpg") no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .icon {
+            width: 1.5em;
+            height: 1.5em;
+            vertical-align: -0.35em;
+            fill: currentColor;
+            overflow: hidden;
+        }
+        div{
+            font-weight: 400;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<!--导航条-->
+<div th:insert="~{navigation::nav}"></div>
+
+<div class="container">
+    <div class="jumbotron" style="margin-top: 50px;">
+        <div class="row">
+            <div class="col-md-6">
+                <img th:src="${event.eventImage}" alt="..." class="img-fluid w-100 rounded">
+            </div>
+
+            <div class="col-md-6">
+                <div>
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-huodong"></use>
+                    </svg>
+                    &nbsp;活动名称：
+                    <span th:text="${event.eventName}"></span>
+                </div>
+                <div>
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-shijian"></use>
+                    </svg>
+                    &nbsp;活动时间：
+                    <span th:text="${event.eventDate}"></span>
+                </div>
+                <div>
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-didian"></use>
+                    </svg>
+                    &nbsp;活动地点：
+                    <span th:text="${event.eventLocation}"></span>
+                </div>
+<!--                <div>-->
+<!--                    <svg class="icon" aria-hidden="true">-->
+<!--                        <use xlink:href="#icon-jiangli"></use>-->
+<!--                    </svg>-->
+<!--                    &nbsp;活动奖励：-->
+<!--                    <span th:text="${event.eventReward}"></span>-->
+<!--                </div>-->
+                <div>
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-xiangqing"></use>
+                    </svg>
+                    &nbsp;活动详情：
+                    <span th:text="${event.eventDescription}"></span>
+                </div>
+
+
+                <hr class="my-4">
+<!--                <span th:if="${session.user.userTelephone==null}" >-->
+<!--                        <a href="/info" role="button" class="btn btn-outline-warning btn-lg">请先完善个人资料</a>-->
+<!--                    </span>-->
+<!--                <span id="al2">-->
+<!--                        <a th:if="${session.user.userTelephone!=null}" class="btn btn-outline-info btn-lg" onclick="register()" role="button">报名参加</a>-->
+<!--                    </span>-->
+<!--                <div class="alert alert-primary" role="alert" id="al1" style="display: none">-->
+<!--                    报名成功！前往个人中心查看<a href="/info" class="alert-link">审核状态</a>。-->
+<!--                </div>-->
+                <form action="/Event/signUp" method="post">
+                    <input type="hidden" id="uid" th:value="${session.Id}">
+                    <input type="hidden" id="eid" name="eventId" th:value="${event.eventId}">
+                    <button id="registerButton" class="btn btn-outline-info btn-lg" type="submit" th:if="${!event.signUp}">报名活动</button>
+                </form>
+
+                <div class="alert alert-primary" role="alert" id="al1" th:if="${event.signUp}">
+                    报名成功！
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function register() {
+        var uid = $("#uid").val();
+        var eid = $("#eid").val();
+        $.ajax({
+            url:"/Event/signUp?eventId="+eid,
+            success:function (data) {
+               window.location.href("/Event/events");
+            }
+        });
+    }
+</script>
+</body>
+</html>

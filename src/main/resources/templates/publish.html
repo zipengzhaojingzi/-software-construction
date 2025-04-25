@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>活动情况</title>
+    <!-- Bootstrap Styles-->
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <!-- FontAwesome Styles-->
+    <link href="/css/font-awesome.css" rel="stylesheet"/>
+    <!-- Morris Chart Styles-->
+    <!-- Custom Styles-->
+    <link href="/css/custom-styles.css" rel="stylesheet"/>
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+    <!-- TABLE STYLES-->
+    <link href="/js/dataTables/dataTables.bootstrap.css" rel="stylesheet"/>
+    <style>
+        #ptr .ptd {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+<div id="wrapper">
+    <nav class="navbar navbar-default top-navbar" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/manage"><strong>活动发布后台管理 </strong></a>
+        </div>
+
+        <ul class="nav navbar-top-links navbar-right">
+            <li class="dropdown" th:if="${session.Name != null}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> 退出登录</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <!--/. NAV TOP  -->
+    <nav class="navbar-default navbar-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="main-menu">
+                <li>
+                    <a href="/backstage/admin"><i class="fa fa-edit"></i>管理员信息管理 </a>
+                </li>
+                <li>
+                    <a href="/front/user" ><i class="fa fa-edit"></i>用户信息管理 </a>
+                </li>
+                <li>
+                    <a href="/PetTest/pet"><i class="fa fa-edit"></i>宠物信息管理</a>
+                </li>
+                <li>
+                    <a href="/Apply/find"><i class="fa fa-list-ul"></i>领养信息审核</a>
+                </li>
+                <li>
+                    <a href="/Apply/agreePage"><i class="fa fa-check"></i>领养审核通过</a>
+                </li>
+                <li>
+                    <a href="/Apply/disagreePage"><i class="fa fa-ban"></i>领养审核未通过</a>
+                </li>
+                <li>
+                    <a href="/Event/publish" class="active-menu"><i class="fa fa-calendar"></i>活动发布管理</a>
+                </li>
+                <!-- 其他菜单项 -->
+            </ul>
+        </div>
+    </nav>
+    <!-- /. NAV SIDE  -->
+    <div id="page-wrapper">
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="page-header">
+                        活动情况
+                    </h1>
+                </div>
+            </div>
+            <!-- /. ROW  -->
+            <!--  Modals-->
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Advanced Tables -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div>
+                                <form method="get" th:action="@{/Event/findByEventName}" style="display: inline">
+                                    <span style="margin-right: 50px;">活动信息表</span>
+                                    <input type="text" class="form-control" name="searchName" id="searchName"
+                                           placeholder="输入名称搜索" style="display: inline;width: 20%">
+                                    <button type="submit" class="btn btn-info">搜索</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#publishModal">
+                                        发布活动
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="dataTables-example" style="table-layout: fixed;">
+                                    <thead>
+                                    <tr>
+                                        <th>活动名称</th>
+                                        <th>活动描述</th>
+                                        <th>活动日期</th>
+                                        <th>活动地点</th>
+                                        <th>活动图片</th>
+                                        <th>报名人数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="event:${events}" id="ptr">
+                                        <td class="ptd"><span th:text="${event.eventName}"></span></td>
+                                        <td class="ptd" style="overflow: hidden; text-overflow: ellipsis; word-break: keep-all; white-space: nowrap;">
+                                            <span th:text="${event.eventDescription}"></span>
+                                        </td>
+                                        <td class="ptd"><span th:text="${event.eventDate}"></span></td>
+                                        <td class="ptd"><span th:text="${event.eventLocation}"></span></td>
+                                        <td class="ptd"><span><img th:src="${event.eventImage}" style="width: 50px"/></span></td>
+                                        <td class="ptd"><span th:text="${event.eventApplyNum}"></span></td>
+                                        <td>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#editEventModal" onclick="edit_event(this)">修改</button>
+                                            <button class="btn btn-danger">
+                                                <a th:href="@{/Event/delete(eventId=${event.eventId})}"
+                                                   style="text-decoration-line: none; color: white">删除</a>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Advanced Tables -->
+                </div>
+            </div>
+            <!-- /. ROW  -->
+
+        </div>
+    </div>
+    <!-- /. PAGE INNER  -->
+</div>
+<!-- /. PAGE WRAPPER  -->
+<!-- /. WRAPPER  -->
+<!-- JS Scripts-->
+<!-- jQuery Js -->
+<script src="/js/jquery-1.10.2.js"></script>
+<!-- Bootstrap Js -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- Metis Menu Js -->
+<script src="/js/jquery.metisMenu.js"></script>
+<!-- DATA TABLE SCRIPTS -->
+<script src="/js/dataTables/jquery.dataTables.js"></script>
+<script src="/js/dataTables/dataTables.bootstrap.js"></script>
+<!-- Custom Js -->
+<script src="/js/custom-scripts.js"></script>
+<!--date js-->
+<script src="/js/moment-with-locales.js"></script>
+<script src="/js/bootstrap-datetimepicker.min.js"></script>
+
+
+<!--&lt;!&ndash; Edit Event Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="editEventModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+<!--                <h4 class="modal-title" id="editEventModalLabel">修改活动</h4>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form method="post" th:action="@{/event/update}" class="form-horizontal" role="form" enctype="multipart/form-data">-->
+<!--                    <input type="hidden" class="form-control" name="eventId" id="edit_eventId">-->
+
+<!--                    <div class="form-group">-->
+<!--                        <label for="edit_eventName" class="col-sm-2 control-label">活动名称</label>-->
+<!--                        <div class="col-sm-10">-->
+<!--                            <input type="text" class="form-control" id="edit_eventName" name="eventName" placeholder="请输入活动名称">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="edit_eventDescription" class="col-sm-2 control-label">活动描述</label>-->
+<!--                        <div class="col-sm-10">-->
+<!--                            <textarea class="form-control" id="edit_eventDescription" name="eventDescription" rows="4" placeholder="请输入活动描述"></textarea>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="edit_eventDate" class="col-sm-2 control-label">活动日期</label>-->
+<!--                        <div class="col-sm-10">-->
+<!--                            <div class='input-group date' id='datetimepicker2'>-->
+<!--                                <input type='text' class="form-control" id="edit_eventDate" name="eventDate"/>-->
+<!--                                <span class="input-group-addon">-->
+<!--                                    <span class="glyphicon glyphicon-calendar"></span>-->
+<!--                                </span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="edit_eventLocation" class="col-sm-2 control-label">活动地点</label>-->
+<!--                        <div class="col-sm-10">-->
+<!--                            <input type="text" class="form-control" id="edit_eventLocation" name="eventLocation" placeholder="请输入活动地点">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="edit_eventImage" class="col-sm-2 control-label">活动图片</label>-->
+<!--                        <div class="col-sm-10">-->
+<!--                            <input type="file" class="form-control" id="edit_eventImage" name="eventImage">-->
+<!--                            <img id="edit_eventImagePreview" src="" alt="当前图片" style="max-width: 100%; max-height: 100px; margin-top: 10px;">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <div class="col-sm-offset-2 col-sm-10">-->
+<!--                            <button type="submit" class="btn btn-primary">保存修改</button>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!-- Publish Event Modal -->
+<form method="post" th:action="@{/Event/save}" class="form-horizontal" role="form" id="editForm" enctype="multipart/form-data">
+    <input type="hidden" id="edit_eventId" name="eventId" value="">
+
+    <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="editEventModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="editEventModalLabel">修改活动</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="position:relative;left:60px;">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label>活动名称</label>
+                                <input type="text" class="form-control" name="eventName" id="edit_eventName" placeholder="请输入活动名称">
+                            </div>
+                            <div class="form-group">
+                                <label>活动描述</label>
+                                <textarea class="form-control" name="eventDescription" id="edit_eventDescription" rows="4" placeholder="请输入活动描述"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>活动日期</label>
+                                <div class='input-group date' id='datetimepicker2' style="width: 85%">
+                                    <input type='text' class="form-control" name="eventDate" id="edit_eventDate"/>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>活动地点</label>
+                                <input type="text" class="form-control" name="eventLocation" id="edit_eventLocation" placeholder="请输入活动地点">
+                            </div>
+                            <div class="form-group">
+                                <label>活动图片</label>
+                                <input type="file" class="form-control" name="eventImage" id="edit_eventImage">
+                                <img id="edit_eventImagePreview" src="" alt="当前图片" style="max-width: 100%; max-height: 100px; margin-top: 10px;">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div style="padding: 20px; position: relative; left: 420px;">
+                    <button type="reset" class="btn btn-default">重置</button>
+                    <button type="submit" class="btn btn-primary">保存修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form method="post" th:action="@{/Event/save}" class="form-horizontal" role="form" id="publishForm" enctype="multipart/form-data"  onsubmit="return">
+    <input type="hidden" id="eventId" name="eventId" value=""> <!-- 确保 eventId 字段存在 -->
+
+    <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="publishModalLabel">发布活动</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="position:relative;left:60px;">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label>活动名称</label>
+                                <input type="text" class="form-control" name="eventName" id="eventName" placeholder="请输入活动名称">
+                            </div>
+                            <div class="form-group">
+                                <label>活动描述</label>
+                                <textarea class="form-control" name="eventDescription" id="eventDescription" rows="4" placeholder="请输入活动描述"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>活动日期</label>
+                                <div class='input-group date' id='datetimepicker1' style="width: 85%">
+                                    <input type='text' class="form-control" name="eventDate" id="eventDate"/>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>活动地点</label>
+                                <input type="text" class="form-control" name="eventLocation" id="eventLocation" placeholder="请输入活动地点">
+                            </div>
+                            <div class="form-group">
+                                <label>活动图片</label>
+                                <input type="file" class="form-control" name="eventImage" id="eventImage">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div style="padding: 20px; position: relative; left: 420px;">
+                    <button type="reset" class="btn btn-default">重置</button>
+                    <button type="submit" class="btn btn-primary">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#dataTables-example').dataTable({
+            "ordering": false,
+            "searching": false
+        });
+
+
+    });
+    $('#datetimepicker1, #datetimepicker2').datetimepicker({
+        format: 'YYYY-MM-DD HH:mm',
+        locale: 'zh-cn'
+    });
+
+
+    function edit_event(obj) {
+        var $td = $(obj).parents('tr').children('td');
+
+        // 提取数据（注意列索引从0开始）
+        var td_name = $td.eq(0).text();
+        var td_description = $td.eq(1).text();
+        var td_date = $td.eq(2).text();
+        var td_location = $td.eq(3).text();
+        var td_image = $td.eq(4).find('img').attr('src');
+
+        // 提取eventId（从删除按钮的链接中解析）
+        var deleteHref = $td.eq(6).find('a').attr('href'); // 操作列是第6个td
+        var td_eventId = deleteHref.split('eventId=')[1];
+
+        // 填充到修改模态框（注意ID前缀 edit_）
+        $("#edit_eventName").val(td_name);
+        $("#edit_eventDescription").val(td_description);
+        $("#edit_eventDate").val(td_date);
+        $("#edit_eventLocation").val(td_location);
+        $("#edit_eventImagePreview").attr('src', td_image); // 图片预览
+        $("#edit_eventId").val(td_eventId); // 隐藏的eventId字段
+    }
+</script>
+</script>
+
+</body>
+</html>

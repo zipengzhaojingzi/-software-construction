@@ -1,0 +1,253 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">-->
+<!--    <link rel="stylesheet" href="/css/bootstrap.min.css">-->
+<!--&lt;!&ndash;    <script type="text/javascript">        document.addEventListener('DOMContentLoaded', function() {&ndash;&gt;-->
+<!--&lt;!&ndash;        var path = window.location.pathname;&ndash;&gt;-->
+<!--&lt;!&ndash;        var searchTypeInput = document.getElementById('searchType');&ndash;&gt;-->
+
+<!--&lt;!&ndash;        if (path === '/Event/events') {&ndash;&gt;-->
+<!--&lt;!&ndash;            searchTypeInput.value = 'event';&ndash;&gt;-->
+<!--&lt;!&ndash;        } else if (path === '/show') {&ndash;&gt;-->
+<!--&lt;!&ndash;            searchTypeInput.value = 'pet';&ndash;&gt;-->
+<!--&lt;!&ndash;        } else {&ndash;&gt;-->
+<!--&lt;!&ndash;            searchTypeInput.value = ''; // 或者其他默认值&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;        console.log("Current Path:", path);&ndash;&gt;-->
+<!--&lt;!&ndash;        console.log("Set searchType to:", searchTypeInput.value);&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function setSearchType(type) {&ndash;&gt;-->
+<!--&lt;!&ndash;        document.getElementById('searchType').value = type;&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+<!--&lt;!&ndash;    </script>&ndash;&gt;-->
+
+<!--</head>-->
+<!--<body>-->
+<!--&lt;!&ndash;导航条&ndash;&gt;-->
+<!--<div th:fragment="nav">-->
+<!--    <nav class="navbar navbar-expand-lg navbar-light  sticky-top" style = "background: #cad5e1c2">-->
+<!--        <div class="container">-->
+<!--            <a href="/index" class="navbar-brand">-->
+<!--                &lt;!&ndash;                <img src="/img/slider/1.jpg" alt="" width="30" height="30" class="d-inline-block align-top">&ndash;&gt;-->
+<!--                宠物领养中心-->
+<!--            </a>-->
+<!--            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">-->
+<!--                <span class="navbar-toggler-icon"></span>-->
+<!--            </button>-->
+
+<!--            <div class="collapse navbar-collapse" id="navbarNav">-->
+<!--                <ul class="navbar-nav mr-auto">-->
+<!--                    <li class="nav-item">-->
+<!--                        <a href="/index" class="nav-link active">首页</a>-->
+<!--                    </li>-->
+<!--&lt;!&ndash;                    <li class="nav-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <a href="#" class="nav-link">宠物知识</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </li>&ndash;&gt;-->
+<!--                    <li class="nav-item">-->
+<!--                        <a href="/show" class="nav-link">领养宠物</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item">-->
+<!--                        <a href="/Event/events" class="nav-link">活动</a>-->
+<!--                    </li>-->
+
+<!--                </ul>-->
+<!--&lt;!&ndash;                <form action="/search" method="get" class="form-inline" style="position: relative;left: -100px;">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <input class="form-control mr-sm-2" type="search" placeholder="请输入关键字" aria-label="Search" name="searchName">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                </form>&ndash;&gt;-->
+<!--                <form id="searchForm" action="/search" method="get" class="form-inline" style="position: relative;left: -100px;">-->
+<!--                    <input type="hidden" id="searchType" name="searchType" value="">-->
+
+<!--                    <input class="form-control mr-sm-2" type="search" placeholder="请输入关键字" aria-label="Search" name="searchName">-->
+<!--                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>-->
+<!--                </form>-->
+
+<!--&lt;!&ndash;                <button onclick="setSearchType('event')">搜索活动</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                <button onclick="setSearchType('pet')">搜索宠物</button>&ndash;&gt;-->
+
+<!--                <ul class="navbar-nav mr-5">-->
+<!--                    <li class="nav-item dropdown"   th:if="${session.Name != null}">-->
+<!--                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">-->
+<!--                            <span  th:text="${session.Name}"></span>-->
+<!--                        </a>-->
+<!--                        <div class="dropdown-menu">-->
+<!--                            <a href="/info" class="dropdown-item">个人中心</a>-->
+<!--                            <a href="/logout" class="dropdown-item">退出登录</a>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" th:if="${session.Name == null}">-->
+<!--                        <a href="/login" class="nav-link">登录</a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </nav>-->
+
+<!--</div>-->
+<!--<script src="/js/jquery.min.js"></script>-->
+<!--<script src="/js/bootstrap.bundle.min.js"></script>-->
+<!--&lt;!&ndash;<script>function setSearchType(type) {&ndash;&gt;-->
+<!--&lt;!&ndash;    document.getElementById('searchType').value = type;&ndash;&gt;-->
+<!--&lt;!&ndash;}&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--<script type="text/javascript">-->
+<!--    //     document.addEventListener('DOMContentLoaded', function() {-->
+<!--    //     console.log("DOMContentLoaded event triggered");-->
+<!--    //-->
+<!--    //     var path = window.location.pathname;-->
+<!--    //     var searchTypeInput = document.getElementById('searchType');-->
+<!--    //-->
+<!--    //     if (searchTypeInput) {-->
+<!--    //         console.log("searchTypeInput found");-->
+<!--    //         if (path === '/Event/events') {-->
+<!--    //             searchTypeInput.value = 'event';-->
+<!--    //         } else if (path === '/show') {-->
+<!--    //             searchTypeInput.value = 'pet';-->
+<!--    //         } else {-->
+<!--    //             searchTypeInput.value = ''; // 或者其他默认值-->
+<!--    //         }-->
+<!--    //         console.log("Current Path:", path);-->
+<!--    //         console.log("Set searchType to:", searchTypeInput.value);-->
+<!--    //     } else {-->
+<!--    //         console.error("searchTypeInput not found");-->
+<!--    //     }-->
+<!--    // });-->
+<!--    //-->
+<!--    // function setSearchType(type) {-->
+<!--    //     var searchTypeInput = document.getElementById('searchType');-->
+<!--    //     if (searchTypeInput) {-->
+<!--    //         searchTypeInput.value = type;-->
+<!--    //         console.log("Set searchType via button to:", type);-->
+<!--    //     } else {-->
+<!--    //         console.error("searchTypeInput not found");-->
+<!--    //     }-->
+<!--    // }-->
+<!--    window.onload = function() {  // 使用 window.onload 确保所有资源加载完成-->
+<!--        console.log("Page loaded");-->
+
+<!--        var path = window.location.pathname;  // 获取当前路径-->
+<!--        console.log("Current Path:", path);  // 打印路径，确认是否获取到-->
+
+<!--        var searchTypeInput = document.getElementById('searchType');  // 获取隐藏字段-->
+
+<!--        if (searchTypeInput) {-->
+<!--            console.log("searchTypeInput found");-->
+
+<!--            // 根据路径动态设置 searchType 的值-->
+<!--            if (path.includes('/Event/events')) {-->
+<!--                searchTypeInput.value = 'event';  // 如果是事件页面-->
+<!--            } else if (path.includes('/show')) {-->
+<!--                searchTypeInput.value = 'pet';  // 如果是宠物页面-->
+<!--            } else {-->
+<!--                searchTypeInput.value = '';  // 其他情况设置为空-->
+<!--            }-->
+
+<!--            console.log("Set searchType to:", searchTypeInput.value);-->
+<!--        } else {-->
+<!--            console.error("searchTypeInput not found");-->
+<!--        }-->
+<!--    };-->
+
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<!--导航条-->
+
+<div th:fragment="nav">
+    <nav class="navbar navbar-expand-lg navbar-light  sticky-top" style="background: #cad5e1c2">
+        <div class="container">
+            <a href="/index" class="navbar-brand">
+                宠物领养中心
+            </a>
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a href="/index" class="nav-link active">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/show" class="nav-link">领养宠物</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/Event/events" class="nav-link">活动</a>
+                    </li>
+                </ul>
+
+                <!-- 搜索表单 -->
+                <form id="searchForm" action="/search" method="get" class="form-inline" style="position: relative;left: -100px;">
+                    <input type="hidden" id="searchType" name="searchType" value="">
+                    <input class="form-control mr-sm-2" type="search" placeholder="请输入关键字" aria-label="Search" name="searchName" required>
+                    <button class="btn btn-outline-success my-2 my-sm-0" id="searchBtn" type="submit">搜索</button>
+                </form>
+
+                <ul class="navbar-nav mr-5">
+                    <li class="nav-item dropdown" th:if="${session.Name != null}">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                            <span th:text="${session.Name}"></span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="/info" class="dropdown-item">个人中心</a>
+                            <a href="/logout" class="dropdown-item">退出登录</a>
+                        </div>
+                    </li>
+                    <li class="nav-item" th:if="${session.Name == null}">
+                        <a href="/login" class="nav-link">登录</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("DOM fully loaded and parsed");
+
+            var path = window.location.pathname;
+            console.log("Current Path:", path);
+
+            var searchTypeInput = document.getElementById('searchType');
+
+            if (searchTypeInput) {
+                console.log("searchTypeInput found");
+
+                if (path.includes('/Event/events')) {
+                    searchTypeInput.value = 'event';
+                } else if (path.includes('/show')) {
+                    searchTypeInput.value = 'pet';
+                } else {
+                    searchTypeInput.value = '';
+                }
+
+                console.log("Set searchType to:", searchTypeInput.value);
+            } else {
+                console.error("searchTypeInput not found");
+            }
+        });
+
+    </script>
+</div>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript">
+console.log("Hello, World!");
+</script>
+</body>
+</html>
+

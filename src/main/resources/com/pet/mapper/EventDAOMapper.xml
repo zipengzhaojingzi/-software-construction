@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pet.demo.dao.EventDao">
+
+    <!-- 查询所有事件 -->
+    <select id="findAll" resultType="com.pet.demo.entity.Event">
+        SELECT * FROM t_event
+    </select>
+
+    <!-- 根据ID查询事件 -->
+    <select id="findById" parameterType="String" resultType="com.pet.demo.entity.Event">
+        SELECT * FROM t_event WHERE eventId = #{eventId}
+    </select>
+
+    <!-- 根据事件名称查询事件 -->
+    <select id="findByEventName" parameterType="String" resultType="com.pet.demo.entity.Event">
+        SELECT * FROM t_event WHERE eventName LIKE CONCAT('%', #{eventName}, '%')
+    </select>
+
+    <!-- 插入事件 -->
+    <insert id="save" parameterType="com.pet.demo.entity.Event">
+        INSERT INTO t_event (eventId, eventName, eventDescription, eventDate, eventLocation,eventImage)
+        VALUES (#{eventId}, #{eventName}, #{eventDescription}, #{eventDate}, #{eventLocation}, #{eventImage})
+    </insert>
+
+    <!-- 删除事件 -->
+    <delete id="deleteById" parameterType="String">
+        DELETE FROM t_event WHERE eventId = #{eventId}
+    </delete>
+
+    <!-- 更新事件 -->
+    <update id="update" parameterType="com.pet.demo.entity.Event">
+        UPDATE t_event
+        SET eventName = #{eventName},
+            eventDescription = #{eventDescription},
+            eventDate = #{eventDate},
+            eventLocation = #{eventLocation},
+            eventApplyNum = #{eventApplyNum},
+            eventImage = #{eventImage}
+        WHERE eventId = #{eventId}
+    </update>
+
+</mapper>

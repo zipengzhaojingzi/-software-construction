@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <!-- Bootstrap Styles-->
+    <link href="/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="/css/font-awesome.css" rel="stylesheet" />
+    <!-- Morris Chart Styles-->
+    <link href="/js/morris/morris-0.4.3.min.css" rel="stylesheet" />
+    <!-- Custom Styles-->
+    <link href="/css/custom-styles.css" rel="stylesheet" />
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="manage.html"> <strong>宠物领养后台管理</strong></a>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+
+
+                <!-- /.dropdown -->
+                <li class="dropdown"  th:if="${session.Name != null}">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> 退出登录</a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+        </nav>
+        <!--/. NAV TOP  -->
+        <nav class="navbar-default navbar-side" role="navigation">
+		<div id="sideNav" href=""><i class="fa fa-caret-right"></i></div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+
+
+                    <li>
+                        <a href="/backstage/admin"><i class="fa fa-edit"></i>管理员信息管理 </a>
+                    </li>
+                    <li>
+                        <a href="/front/user" ><i class="fa fa-edit"></i>用户信息管理 </a>
+                    </li>
+                    <li>
+                        <a href="/PetTest/pet"><i class="fa fa-edit"></i>宠物信息管理</a>
+                    </li>
+                    <li>
+                        <a href="/Apply/find"><i class="fa fa-list-ul"></i>领养信息审核</a>
+                    </li>
+                    <li>
+                        <a href="/Apply/agreePage"><i class="fa fa-check"></i>领养审核通过</a>
+                    </li>
+                    <li>
+                        <a href="/Apply/disagreePage"><i class="fa fa-ban"></i>领养审核未通过</a>
+                    </li>
+                    <li>
+                        <a href="/Event/publish"><i class="fa fa-calendar"></i>活动发布管理</a>
+                    </li>
+					
+
+
+                </ul>
+
+            </div>
+
+        </nav>
+        <!-- /. NAV SIDE  -->
+        <div id="page-wrapper">
+            <div id="page-inner">
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="page-header">
+                            <span  th:text="${session.Name}"></span>  <small>欢迎登录宠物领养后台管理系统</small>
+                        </h1>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                操作记录
+                            </div>
+                            <div class="panel-body">
+                                <div class="list-group">
+
+                                    <a th:href="${logs.url}" class="list-group-item" th:each="logs:${logs}">
+                                        <span class="badge" th:text="${logs.createTime}"></span>
+                                        <i class="fa fa-fw fa-comment"></i>管理员<span th:text="${logs.AId}" style="color: red"></span>
+                                        <span th:text="${logs.adminAction}"></span>
+                                        用户<span th:text="${logs.object}" style="color:#007eff;"></span> 的领养请求
+                                    </a>
+
+                                </div>
+                                <div class="text-right">
+                                    <a href="#">More Tasks <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+				
+                <!-- /. ROW  -->
+
+            </div>
+            <!-- /. PAGE INNER  -->
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+        </div>
+    <!-- /. WRAPPER  -->
+    <!-- JS Scripts-->
+    <!-- jQuery Js -->
+    <script src="/js/jquery-1.10.2.js"></script>
+    <!-- Bootstrap Js -->
+    <script src="/js/bootstrap.min.js"></script>
+	 
+    <!-- Metis Menu Js -->
+    <script src="/js/jquery.metisMenu.js"></script>
+    <!-- Morris Chart Js -->
+    <script src="/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="/js/morris/morris.js"></script>
+	
+	
+	<script src="/js/easypiechart.js"></script>
+	<script src="/js/easypiechart-data.js"></script>
+	
+	
+    <!-- Custom Js -->
+    <script src="/js/custom-scripts.js"></script>
+
+
+</body>
+
+</html>

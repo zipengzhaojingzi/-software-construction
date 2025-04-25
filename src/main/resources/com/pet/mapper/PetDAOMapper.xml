@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pet.demo.dao.PetDao">
+    <select id="findAll" resultType="Pet">
+        select * from t_pet
+    </select>
+    <select id="findPet" resultType="Pet">
+        select * from t_pet where petState=#{petState}
+    </select>
+    <insert id="save" parameterType="Pet">
+        insert into t_pet values(#{petId},#{petName},#{petSex},#{petSub},#{petType},#{petBir},#{petDetail},#{petPic},#{petState})
+    </insert>
+    <delete id="delete" parameterType="String">
+        delete from t_pet where petId=#{petId}
+    </delete>
+    <select id="findOne" parameterType="String" resultType="Pet">
+            select petId,petName,petSex,petSub,petType,petBir,petDetail,petPic,petState from t_pet
+             where petId=#{petId}
+    </select>
+    <update id="update" parameterType="Pet" >
+        update t_pet set petId=#{petId},petName=#{petName},petSex=#{petSex},petSub=#{petSub},petType=#{petType},petBir=#{petBir},petDetail=#{petDetail},petPic=#{petPic},petState=#{petState}
+         where petId=#{petId}
+    </update>
+    <!--根据Name模糊查找-->
+    <select id="findByName" parameterType="String" resultType="Pet">
+         select * from t_pet where petName like #{petName} or petType like #{petName} or petSub like #{petName}
+--         select * from t_user where userName like '%${username}%';
+    </select>
+
+</mapper>
