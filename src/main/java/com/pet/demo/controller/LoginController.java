@@ -41,36 +41,29 @@ public class LoginController {
         String sessionCode = (String) session.getAttribute("code");
         if(sessionCode.equalsIgnoreCase(code)){
             if(role.equals("管理员")){
-                if(adminService.loading(Account,Password)==null){
-                    model.addAttribute("error","该用户不存在");
+                Admin loading = adminService.loading(Account, Password);
+                if (loading == null) {
+                    model.addAttribute("error", "该用户不存在或密码错误");
                     return "/login";
                 }
-                Admin loading = adminService.loading(Account,Password);
-                if(loading!=null){
-                    session.setAttribute("Name",loading.getAdminName());
-                    session.setAttribute("Id",loading.getAdminId());
-                    return "redirect:/manage";
-                }else {
-                    model.addAttribute("error","用户名或密码错误，请检查后重试");
-                    return "/login";
-                }
+
+                session.setAttribute("Name", loading.getAdminName());
+                session.setAttribute("Id", loading.getAdminId());
+                return "redirect:/manage";
             }
             else{
-                if(userService.login(Account,Password)==null){
-                    model.addAttribute("error","该用户不存在");
+                User login = userService.login(Account, Password);
+                if (login == null) {
+                    model.addAttribute("error", "该用户不存在或密码错误");
                     return "/login";
                 }
-                User login = userService.login(Account,Password);
-                if(login!=null){
-                    session.setAttribute("Name",login.getUserName());
-                    session.setAttribute("Id",login.getUserId());
-                    session.setAttribute("user",login);
-                    session.setAttribute("identity", login.getIdentity());
-                    return "redirect:/index";
-                }else {
-                    model.addAttribute("error","用户名或密码错误，请检查后重试");
-                    return "/login";
-                }
+
+                session.setAttribute("Name", login.getUserName());
+                session.setAttribute("Id", login.getUserId());
+                session.setAttribute("user", login);
+                session.setAttribute("identity", login.getIdentity());
+                return "redirect:/index";
+
             }
 
 

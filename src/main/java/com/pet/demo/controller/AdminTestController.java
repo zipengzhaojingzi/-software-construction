@@ -70,4 +70,6 @@ public class AdminTestController {
         adminService.delete(adminId);
         return "redirect:/backstage/admin";
     }
+
+
 }

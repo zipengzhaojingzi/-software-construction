@@ -183,7 +183,7 @@ public String saveEvent(@RequestParam(value = "eventImage", required = false) Mu
     }
 
     @PostMapping("/signUp")
-    public String signUp(@RequestParam String eventId, HttpSession session) {
+        public String signUp(@RequestParam String eventId, HttpSession session) {
         String userId = session.getAttribute("Id").toString();
         eventService.insertUserEvent(userId, eventId);
         Event byId = eventService.findById(eventId);
