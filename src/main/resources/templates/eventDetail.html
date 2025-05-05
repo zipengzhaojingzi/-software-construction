@@ -24,10 +24,14 @@
             font-size: 18px;
         }
     </style>
+    <link rel="stylesheet" href="/css/chat.css">
+
 </head>
 <body>
 <!--导航条-->
 <div th:insert="~{navigation::nav}"></div>
+<div th:replace="~{chat :: chatWidget}"></div>
+
 
 <div class="container">
     <div class="jumbotron" style="margin-top: 50px;">

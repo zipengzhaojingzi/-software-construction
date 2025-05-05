@@ -3,6 +3,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 		<link rel="stylesheet" href="/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/css/chat.css">
 
 		<script src="/js/jquery.min.js"></script>
 		<script src="/js/bootstrap.bundle.min.js"></script>
@@ -56,8 +57,10 @@
 	<body>
 	<!--导航条-->
 	<div th:insert="~{navigation::nav}"></div>
+    <div th:replace="~{chat :: chatWidget}"></div>
 
-	<div class="container">
+
+    <div class="container">
 		<div class="jumbotron" style="margin-top: 50px;height: 580px">
 
 

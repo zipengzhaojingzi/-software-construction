@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>宠物助手</title>
+
+
+</head>
+<body>
+<!-- 浮动聊天按钮 -->
+<div th:fragment="chatWidget">
+<div class="chat-toggle" onclick="toggleChat()">💬</div>
+
+<!-- 聊天窗口 -->
+<div class="chat-container" id="chatContainer">
+    <div class="chat-header">
+        <span>宠物助手</span>
+        <button class="close-btn" onclick="toggleChat()">×</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="输入你的问题..." onkeypress="handleEnter(event)">
+        <button onclick="sendMessage()">发送</button>
+    </div>
+</div>
+
+<script  th:inline="javascript">
+    // JavaScript 代码见下文
+    let isChatOpen = false;
+    // const context = document.body;
+    // const keyword = "重点";
+    // const options = {}; // 这里可以根据需要设置mark.js的高级选项
+    //
+    // new Mark(context).mark(keyword, options);
+
+    // 切换聊天窗口显示/隐藏
+    function toggleChat() {
+        const chatContainer = document.getElementById('chatContainer');
+        isChatOpen = !isChatOpen;
+        chatContainer.style.display = isChatOpen ? 'flex' : 'none';
+    }
+
+    // 处理回车键发送
+    function handleEnter(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    // 发送消息到后端
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const prompt = input.value.trim();
+        if (!prompt) return;
+
+        // 清空输入框
+        input.value = '';
+
+        // 添加用户消息
+        appendMessage(prompt, 'user');
+
+        showLoading();
+
+        try {
+            // 调用后端接口（需启动 Spring Boot 服务）
+            const response = await fetch('http://localhost:8080/ai/chat?prompt=' + encodeURIComponent(prompt), {
+                method: 'POST'
+            });
+
+            // 处理流式响应
+            const reader = response.body.getReader();
+            let botMessage = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                // 解码流数据
+                const chunk = new TextDecoder().decode(value);
+                botMessage += chunk;
+
+                // 实时更新消息
+                updateBotMessage(botMessage);
+            }
+        } catch (error) {
+            removeLoading();
+            appendMessage('请求失败，请稍后重试', 'bot');
+
+        }
+    }
+
+    // 添加消息到聊天窗口
+    function appendMessage(text, sender) {
+        const messagesDiv = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        // 处理 AI 消息
+        if (sender === 'bot') {
+            messageDiv.innerHTML = processContent(text);
+        } else {
+            messageDiv.textContent = text;
+        }
+        // messageDiv.textContent = text;
+        // messageDiv.innerHTML = sender === 'bot'
+        //     ? DOMPurify.sanitize(marked.parse(text))
+        //     : text;
+        messagesDiv.appendChild(messageDiv);
+
+        // 自动滚动到底部
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+    function processContent(content) {
+        if (!content) return '';
+
+        // 仅处理think标签的逻辑（如果需要保留）
+        return content
+            .replace(/<think>/g, '<div class="think-block">')
+            .replace(/<\/think>/g, '</div>');
+    }
+
+    //
+    // // 移植处理函数
+    // function processContent(content) {
+    //     if (!content) return '';
+    //
+    //     let result = '';
+    //     let isInThinkBlock = false;
+    //     let currentBlock = '';
+    //
+    //     // 处理 think 标签
+    //     for (let i = 0; i < content.length; i++) {
+    //         if (content.slice(i, i + 7) === '<think>') {
+    //             isInThinkBlock = true;
+    //             if (currentBlock) {
+    //                 result += marked.parse(currentBlock);
+    //             }
+    //             currentBlock = '';
+    //             i += 6;
+    //             continue;
+    //         }
+    //
+    //         if (content.slice(i, i + 8) === '</think>') {
+    //             isInThinkBlock = false;
+    //             result += `<div class="think-block">${marked.parse(currentBlock)}</div>`;
+    //             currentBlock = '';
+    //             i += 7;
+    //             continue;
+    //         }
+    //
+    //         currentBlock += content[i];
+    //     }
+    //
+    //     // 处理剩余内容
+    //     if (currentBlock) {
+    //         result += isInThinkBlock
+    //             ? `<div class="think-block">${marked.parse(currentBlock)}</div>`
+    //             : marked.parse(currentBlock);
+    //     }
+    //
+    //     // 净化 HTML
+    //     const cleanHtml = DOMPurify.sanitize(result, {
+    //         ALLOWED_TAGS: ['div', 'p', 'pre', 'code', 'span', 'strong', 'em', 'ul', 'ol', 'li'],
+    //         ALLOWED_ATTR: ['class']
+    //     });
+    //
+    //     return cleanHtml;
+    // }
+    // 更新机器人的流式响应
+    function updateBotMessage(text) {
+        const messages = document.getElementsByClassName('bot-message');
+        const lastMessage = messages[messages.length - 1];
+
+        if (lastMessage) {
+            lastMessage.innerHTML = processContent(text);
+        } else {
+            appendMessage(text, 'bot');
+        }
+        document.getElementById('chatMessages').scrollTop =
+            document.getElementById('chatMessages').scrollHeight;
+        // // 保持滚动到底部
+        // const messagesDiv = document.getElementById('chatMessages');
+        // messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function showLoading() {
+        const loading = document.createElement('div');
+        loading.className = 'message bot-message';
+        loading.innerHTML = '<div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>';
+        document.getElementById('chatMessages').appendChild(loading);
+    }
+    function removeLoading() {
+        const loadingElements = document.getElementsByClassName('loading-dots');
+        if (loadingElements.length > 0) {
+            loadingElements[0].parentElement.remove();  // 移除加载动画元素
+        }
+    }
+
+
+
+</script>
+</div>
+</body>
+</html>

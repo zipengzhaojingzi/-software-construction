@@ -5,7 +5,6 @@ import com.pet.demo.service.AdminService;
 import com.pet.demo.service.ApplyService;
 import com.pet.demo.service.SysLogService;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -13,8 +12,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpSession;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import jakarta.servlet.http.HttpServletRequest;  // 替换原javax.servlet导入
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,9 +32,11 @@ public class LogAsPect {
     @Autowired
     private ApplyService applyService;
 
-    @Autowired
-    private HttpSession session;
-
+//    @Autowired
+//    private HttpServletRequest request;
+private HttpServletRequest getRequest() {
+    return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+}
     //对添加了注解的方法执行
     @Pointcut("@annotation(com.pet.demo.config.Log)")
 //    @Pointcut("execution(* com.pet.demo.service.*.*(..))")对所有service执行
@@ -82,7 +84,8 @@ public class LogAsPect {
 //            String []value = args.substring();
             //从session中获取当前登陆人id
 
-    		String adminId = (String) session.getAttribute("Id");
+//    		String adminId = (String) session.getAttribute("Id");
+            String adminId = (String) getRequest().getSession().getAttribute("Id");
 
 
 //            sys_log.setAdminAction(methodName);

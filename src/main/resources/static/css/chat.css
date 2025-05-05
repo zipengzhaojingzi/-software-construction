@@ -1,0 +1,146 @@
+.think-block {
+    position: relative;
+    padding: 12px 16px;
+    margin: 8px 0;
+    background: rgba(0, 0, 0, 0.05);
+    border-left: 4px solid green;
+    border-radius: 4px;
+    color: #666;
+    font-style: italic;
+}
+
+.think-block::before {
+    content: "思考过程";
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    background: white;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    color: green;
+    border-radius: 4px;
+    font-style: normal;
+}
+
+/* 暗色模式适配 */
+.dark .think-block {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #4dabf7;
+    color: #adb5bd;
+}
+
+.dark .think-block::before {
+    background: #1a1a1a;
+    color: #4dabf7;
+}
+/* 在样式表中添加 */
+.bot-message.thinking {
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 8px 0;
+    position: relative;
+    min-height: 40px;
+}
+
+.loading-dots {
+    color: #666;
+    font-size: 14px;
+}
+
+/* 样式代码见下文 */
+.chat-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #4CAF50;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 60px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.chat-container {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 600px;
+    height: 800px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.chat-header {
+    padding: 15px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f9f9f9;
+}
+
+.chat-input {
+    padding: 15px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 80%;
+}
+
+.user-message {
+    background: #e3f2fd;
+    margin-left: auto;
+}
+
+.bot-message {
+    background: white;
+    margin-right: auto;
+    border: 1px solid #eee;
+}
