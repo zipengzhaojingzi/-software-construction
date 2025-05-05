@@ -1,0 +1,14 @@
+#spring:
+#  ai:
+#    openai:
+#      base-url: https://ark.cn-beijing.volces.com/api
+#      api-key: 3414bf9f-54bb-4d86-9933-cc996a6da313
+#    chat:
+#      model: doubao-1-5-pro-32k-250115
+spring:
+  ai:
+    dashscope:
+      agent:
+        app-id: 0d1fe78eff3244c9942200b9fe7fb6dd
+      api-key: ${DASHSCOPE_API_KEY}  # 使用环境变量
+
