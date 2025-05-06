@@ -3,45 +3,39 @@
 <head>
     <title>宠物助手</title>
 <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>-->
 
 <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js"></script>-->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/ir-black.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.2/markdown-it.min.js"></script>
-
+<!--    <script src="vendor/mark.js/dist/mark.min.js" charset="UTF-8"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
+    <script src="https://unpkg.com/marked@11.10.0/dist/marked.min.js"></script>
 
 
 </head>
 <body>
 <!-- 浮动聊天按钮 -->
 <div th:fragment="chatWidget">
-<div class="chat-toggle" id="chatToggle">💬</div>
+<div class="chat-toggle" onclick="toggleChat()">💬</div>
 
 <!-- 聊天窗口 -->
 <div class="chat-container" id="chatContainer">
     <div class="chat-header">
         <span>宠物助手</span>
-        <button class="close-btn" id="closeBtn">×</button>
+        <button class="close-btn" onclick="toggleChat()">×</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
-        <input type="text" id="userInput" placeholder="输入你的问题..." >
+        <input type="text" id="userInput" placeholder="输入你的问题..." onkeypress="handleEnter(event)">
         <button onclick="sendMessage()">发送</button>
     </div>
 </div>
 
-<script  th:inline="javascript"   type="module">
+<script  th:inline="javascript">
     // JavaScript 代码见下文
     let isChatOpen = false;
         // new Mark(context).mark(keyword, options);
-    // 如果必须使用模块化，应改为：
-    import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
+
     // 切换聊天窗口显示/隐藏
-    document.getElementById('chatToggle').addEventListener('click', toggleChat);
-    document.getElementById('closeBtn').addEventListener('click', toggleChat);
     function toggleChat() {
         const chatContainer = document.getElementById('chatContainer');
         isChatOpen = !isChatOpen;
@@ -49,17 +43,11 @@
     }
 
     // 处理回车键发送
-    // function handleEnter(event) {
-    //     if (event.key === 'Enter') {
-    //         sendMessage();
-    //     }
-    // }
-    // 移除HTML中的onkeypress属性，改为：
-    document.getElementById('userInput').addEventListener('keypress', function(event) {
+    function handleEnter(event) {
         if (event.key === 'Enter') {
             sendMessage();
         }
-    });
+    }
 
     // 发送消息到后端
     async function sendMessage() {
@@ -123,71 +111,62 @@
         // 自动滚动到底部
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
-    // function processContent(content) {
-    //     if (!content) return '';
-    //
-    //     // 仅处理think标签的逻辑（如果需要保留）
-    //     return content
-    //         .replace(/<think>/g, '<div class="think-block">')
-    //         .replace(/<\/think>/g, '</div>');
-    // }
-    marked.use({
-        extensions: [{
-            name: 'code', // 明确指定扩展名称
-            renderer(token) {
-                return `<pre><code class="hljs">${hljs.highlightAuto(token.text).value}</code></pre>`;
-            }
-        }]
-    });
-
-
-    // 移植处理函数
     function processContent(content) {
         if (!content) return '';
 
-        let result = '';
-        let isInThinkBlock = false;
-        let currentBlock = '';
-
-        // 处理 think 标签
-        for (let i = 0; i < content.length; i++) {
-            if (content.slice(i, i + 7) === '<think>') {
-                isInThinkBlock = true;
-                if (currentBlock) {
-                    result += marked.parse(currentBlock);
-                }
-                currentBlock = '';
-                i += 6;
-                continue;
-            }
-
-            if (content.slice(i, i + 8) === '</think>') {
-                isInThinkBlock = false;
-                result += `<div class="think-block">${marked.parse(currentBlock)}</div>`;
-                currentBlock = '';
-                i += 7;
-                continue;
-            }
-
-            currentBlock += content[i];
-        }
-
-        // 处理剩余内容
-        if (currentBlock) {
-            result += isInThinkBlock
-                ? `<div class="think-block">${marked.parse(currentBlock)}</div>`
-                : marked.parse(currentBlock);
-        }
-
-        // // 净化 HTML
-        // const cleanHtml = DOMPurify.sanitize(result, {
-        //     ALLOWED_TAGS: ['div', 'p', 'pre', 'code', 'span', 'strong', 'em', 'ul', 'ol', 'li'],
-        //     ALLOWED_ATTR: ['class']
-        // });
-        // console.log('Sanitized HTML:', cleanHtml); // 查看控制台输出
-
-        return result;
+        // 仅处理think标签的逻辑（如果需要保留）
+        return content
+            .replace(/<think>/g, '<div class="think-block">')
+            .replace(/<\/think>/g, '</div>');
     }
+
+
+    // 移植处理函数
+    // function processContent(content) {
+    //     if (!content) return '';
+    //
+    //     let result = '';
+    //     let isInThinkBlock = false;
+    //     let currentBlock = '';
+    //
+    //     // 处理 think 标签
+    //     for (let i = 0; i < content.length; i++) {
+    //         if (content.slice(i, i + 7) === '<think>') {
+    //             isInThinkBlock = true;
+    //             if (currentBlock) {
+    //                 result += marked.parse(currentBlock);
+    //             }
+    //             currentBlock = '';
+    //             i += 6;
+    //             continue;
+    //         }
+    //
+    //         if (content.slice(i, i + 8) === '</think>') {
+    //             isInThinkBlock = false;
+    //             result += `<div class="think-block">${marked.parse(currentBlock)}</div>`;
+    //             currentBlock = '';
+    //             i += 7;
+    //             continue;
+    //         }
+    //
+    //         currentBlock += content[i];
+    //     }
+    //
+    //     // 处理剩余内容
+    //     if (currentBlock) {
+    //         result += isInThinkBlock
+    //             ? `<div class="think-block">${marked.parse(currentBlock)}</div>`
+    //             : marked.parse(currentBlock);
+    //     }
+    //
+    //     // 净化 HTML
+    //     const cleanHtml = DOMPurify.sanitize(result, {
+    //         ALLOWED_TAGS: ['div', 'p', 'pre', 'code', 'span', 'strong', 'em', 'ul', 'ol', 'li'],
+    //         ALLOWED_ATTR: ['class']
+    //     });
+    //
+    //     return cleanHtml;
+    // }
     // 更新机器人的流式响应
     function updateBotMessage(text) {
         const messages = document.getElementsByClassName('bot-message');
