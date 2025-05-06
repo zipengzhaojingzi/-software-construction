@@ -29,14 +29,16 @@
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
         <input type="text" id="userInput" placeholder="输入你的问题..." >
-        <button onclick="sendMessage()">发送</button>
+        <button  id="sendBtn" onclick="sendMessage()">发送</button>
     </div>
 </div>
 
 <script  th:inline="javascript"   type="module">
     // JavaScript 代码见下文
     let isChatOpen = false;
-        // new Mark(context).mark(keyword, options);
+    let isWaitingForResponse = false; // 新增状态标志
+
+    // new Mark(context).mark(keyword, options);
     // 如果必须使用模块化，应改为：
     import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
     // 切换聊天窗口显示/隐藏
@@ -65,7 +67,16 @@
     async function sendMessage() {
         const input = document.getElementById('userInput');
         const prompt = input.value.trim();
+        const sendBtn = document.getElementById('sendBtn');
+        sendBtn.disabled = true;
         if (!prompt) return;
+        // 状态检查拦截
+        if (isWaitingForResponse || !input.value.trim()) return;
+
+        // 锁定交互控件
+        input.disabled = true;
+        sendBtn.disabled = true;
+        isWaitingForResponse = true;
 
         // 清空输入框
         input.value = '';
@@ -100,6 +111,14 @@
             removeLoading();
             appendMessage('请求失败，请稍后重试', 'bot');
 
+        } finally { // 确保始终执行
+            input.disabled = false;
+            sendBtn.disabled = false;
+            isWaitingForResponse = false;
+            removeLoading();
+
+            // 输入框重新聚焦
+            setTimeout(() => input.focus(), 50);
         }
     }
 

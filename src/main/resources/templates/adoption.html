@@ -28,6 +28,7 @@
 			
 		</style>
 		<link rel="stylesheet" href="/css/chat.css">
+		<link rel="stylesheet" href="/css/navigation.css">
 
 	</head>
 	<body>
@@ -98,7 +99,9 @@
 						<input type="hidden" id="uid" th:value="${session.Id}">
 						<input type="hidden" id="pid" th:value="${pet.petId}">
 						<hr class="my-4">
-						<span th:if="${session.user.userTelephone==null}" >
+						<a th:if="${session.Name==null}" href="/login" class="btn btn-primary"
+						   style="position: relative; z-index: 2;">请先登录</a>
+						<span th:if="${session.Name!=null&&session.user.userTelephone==null}" >
 							<a href="/info" role="button" class="btn btn-outline-warning btn-lg">请先完善个人资料</a>
 						</span>
 						<span id="al2">

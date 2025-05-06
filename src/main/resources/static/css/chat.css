@@ -50,24 +50,29 @@
 
 /* 样式代码见下文 */
 .chat-toggle {
+    font-size: 40px;
+    transition: transform 0.2s ease;
     position: fixed;
     bottom: 30px;
     right: 30px;
     background: #4CAF50;
     color: white;
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     text-align: center;
-    line-height: 60px;
+    line-height: 100px;
     cursor: pointer;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     z-index: 1000;
 }
+.chat-toggle:hover {
+     transform: scale(1.05) rotate(8deg);
+ }
 
 .chat-container {
     position: fixed;
-    bottom: 100px;
+    bottom: 90px;
     right: 30px;
     width: 600px;
     height: 800px;
