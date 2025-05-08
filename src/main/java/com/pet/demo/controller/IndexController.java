@@ -57,7 +57,9 @@ public class IndexController {
     @GetMapping("/adoption/{id}")
     public String petAdoption(@PathVariable(name = "id")String id,Model model)
     {
-        Pet pet=petService.findOne(id);
+//        Pet pet=petService.findOne(id);
+        Pet pet=petService.getPetWithImages(id);
+//        System.out.println("Pet Images: " + pet.getPetPics()); // 应输出 [url1, url2, ...]
         model.addAttribute("pet",pet);
         return "adoption";
 

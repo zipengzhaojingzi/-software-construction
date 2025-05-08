@@ -1,6 +1,5 @@
 package com.pet.demo.service;
 
-import com.pet.demo.entity.Admin;
 import com.pet.demo.entity.Pet;
 
 import java.util.List;
@@ -13,4 +12,8 @@ public interface PetService {
     void update(Pet pet);
     Pet findOne(String id);
     List<Pet> findByName(String petName);
+//    void saveWithImages(Pet pet);
+//    void updateWithImages(Pet pet);
+    Pet getPetWithImages(String petId);
+    void addImagesToPet(String petId, List<String> imageUrls);
 }

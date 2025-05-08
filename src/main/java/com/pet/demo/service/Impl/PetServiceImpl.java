@@ -5,6 +5,7 @@ import com.pet.demo.entity.Pet;
 import com.pet.demo.service.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void save(Pet pet) {
-        pet.setPetId(UUID.randomUUID().toString());
+//        pet.setPetId(UUID.randomUUID().toString());
         petDao.save(pet);
     }
 
@@ -50,6 +51,32 @@ public class PetServiceImpl implements PetService {
     public List<Pet> findByName(String petName) {
         return petDao.findByName(petName);
     }
+    @Override
+    public Pet getPetWithImages(String petId) {
+        Pet pet = petDao.findWithImagesById(petId);
 
+        // 兼容旧数据：如果新字段为空但旧字段有值
+        if (pet.getPetPics().isEmpty() && pet.getPetPic() != null) {
+            pet.getPetPics().add(pet.getPetPic());
+        }
+
+        return pet;
+    }
+
+    @Transactional
+    @Override
+    public void addImagesToPet(String petId, List<String> imageUrls) {
+//        // 保存新图片到关联表
+//        petDao.batchInsertImages(petId, imageUrls);
+//
+//        // 可选：更新主表首图（如果需要）
+//        if (!imageUrls.isEmpty()) {
+//            petDao.updateMainImage(petId, imageUrls.get(0));
+//        }
+        petDao.deleteImagesByPetId(petId);
+        if (!imageUrls.isEmpty()) {
+            petDao.batchInsertImages(petId, imageUrls);
+        }
+    }
 
 }

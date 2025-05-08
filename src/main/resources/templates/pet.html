@@ -22,6 +22,25 @@
             vertical-align: middle;
             text-align: center;
         }
+        /* 上传模态框样式 */
+        #uploadModal .modal-dialog {
+            max-width: 600px  !important;
+        }
+
+        /* 预览图片样式 */
+        .preview-area img {
+            transition: transform 0.3s;
+        }
+
+        .preview-area img:hover {
+            transform: scale(1.1);
+            z-index: 2;
+        }
+        #preview-images img.selected {
+            border: 2px solid red;
+        }
+
+
     </style>
 </head>
 <body>
@@ -126,8 +145,9 @@
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal"
                                                             aria-hidden="true">
+                                                        <span aria-hidden="true">&times;</span>
                                                     </button>
-                                                    <h4 class="modal-title" id="myModalLabel">新增宠物</h4>
+                                                    <h4 class="modal-title" id="myModalLabel">新增宠物（或修改，需重新上传图片）</h4>
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="row" style=" position:relative;left:60px;">
@@ -174,9 +194,11 @@
                                                                        id="edit_detail">
                                                             </div>
                                                             <div class="form-group">
-                                                                <label>宠物照片</label>
-                                                                <input type="file" class="form-control" name="petPic"
-                                                                       id="edit_pic">
+                                                                <label>照片(可多选,上传后选择主图）</label>
+<!--                                                                <input type="file" class="form-control" name="petPic"-->
+<!--                                                                       id="edit_pic">-->
+                                                                <input type="hidden" name="mainImage" id="mainImage">
+                                                                <input type="file" class="form-control" name="images" id="edit_pics" multiple accept="image/*">
 <!--                                                                <input type="text" class="form-control" >-->
                                                             </div>
 
@@ -188,6 +210,8 @@
                                                                     <option>已领养</option>
                                                                 </select>
                                                             </div>
+                                                            <div id="preview-images" style="display: flex; flex-wrap: wrap;"></div>
+
                                                         </form>
                                                     </div>
                                                 </div>
@@ -195,10 +219,12 @@
                                                     <button type="reset" class="btn btn-default">重置</button>
                                                     <button type="submit" class="btn btn-primary">确定</button>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
                                 </form>
+
 
                             </div>
                         </div>
@@ -216,7 +242,7 @@
                                         <th>宠物介绍</th>
                                         <th>宠物照片</th>
                                         <th>是否被领养</th>
-                                        <th>操作</th>
+                                        <th style="width: 200px;">操作</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -240,6 +266,7 @@
                                                 <a th:href="@{/PetTest/delete(petId=${pet.petId})}"
                                                    style="text-decoration-line: none;color: white">删除</a>
                                             </button>
+
                                         </td>
                                     </tr>
                                     </tbody>
@@ -295,6 +322,29 @@
             $(this).css("cursor", 'pointer');
         });
 
+    document.getElementById("edit_pics").addEventListener("change", function () {
+        const files = this.files;
+        const preview = document.getElementById("preview-images");
+        preview.innerHTML = "";
+
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.width = "100px";
+                img.style.margin = "5px";
+                img.style.cursor = "pointer";
+                img.onclick = () => {
+                    document.getElementById("mainImage").value = file.name;
+                    document.querySelectorAll("#preview-images img").forEach(i => i.classList.remove("selected"));
+                    img.classList.add("selected");
+                };
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
 
 
 
@@ -320,6 +370,58 @@
         $("#edit_state").val(td_state);
         $("#edit_petId").val(td_petId);
     }
+    // let currentPetId = null;
+    //
+    // // 模态框显示时获取宠物ID
+    // $('#uploadModal').on('show.bs.modal', function(e) {
+    //     const btn = $(e.relatedTarget);
+    //     currentPetId = btn.data('pet-id');
+    // });
+    //
+    // // 文件选择预览
+    // $('input[name="images"]').change(function(e) {
+    //     const preview = $('.preview-area').empty();
+    //     Array.from(this.files).forEach(file => {
+    //         const reader = new FileReader();
+    //         reader.onload = (e) => {
+    //             preview.append(`
+    //             <div class="col-3 mb-2">
+    //                 <img src="${e.target.result}"
+    //                      class="img-thumbnail"
+    //                      style="height:100px;object-fit:cover">
+    //             </div>
+    //         `);
+    //         }
+    //         reader.readAsDataURL(file);
+    //     });
+    // });
+    //
+    // // 提交上传
+    // function submitUpload() {
+    //     const formData = new FormData();
+    //     const files = $('input[name="images"]')[0].files;
+    //
+    //     // 添加文件到FormData
+    //     Array.from(files).forEach(file => {
+    //         formData.append('images', file);
+    //     });
+    //
+    //     // AJAX提交
+    //     $.ajax({
+    //         url: `/PetTest/${currentPetId}/uploadImages`,
+    //         type: 'POST',
+    //         data: formData,
+    //         processData: false,
+    //         contentType: false,
+    //         success: () => {
+    //             $('#uploadModal').modal('hide');
+    //             location.reload(); // 刷新页面更新图片
+    //         },
+    //         error: (xhr) => {
+    //             alert('上传失败: ' + xhr.responseText);
+    //         }
+    //     });
+    // }
 
 
 </script>

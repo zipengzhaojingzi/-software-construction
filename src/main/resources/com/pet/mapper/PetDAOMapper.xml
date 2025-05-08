@@ -26,5 +26,91 @@
          select * from t_pet where petName like #{petName} or petType like #{petName} or petSub like #{petName}
 --         select * from t_user where userName like '%${username}%';
     </select>
+    <!-- petMapper.xml -->
+<!--        &lt;!&ndash; 基础结果映射 &ndash;&gt;-->
+<!--        <resultMap id="baseResultMap" type="Pet">-->
+<!--            <id column="pet_id" property="petId"/>-->
+<!--            <result column="pet_name" property="petName"/>-->
+<!--            <result column="pet_pic" property="petPic"/>-->
+<!--        </resultMap>-->
+
+<!--        &lt;!&ndash; 包含图片集合的结果映射 &ndash;&gt;-->
+<!--    <resultMap id="withImagesResultMap" type="Pet" extends="baseResultMap">-->
+<!--        <collection property="petPics" ofType="string">-->
+<!--            <result column="image_urls"-->
+<!--                    typeHandler="org.apache.ibatis.type.StringTypeHandler"-->
+<!--                    javaType="java.util.ArrayList"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+
+<!--    <resultMap id="withImagesResultMap" type="Pet" extends="baseResultMap">-->
+<!--        <collection-->
+<!--                property="petPics"-->
+<!--                ofType="string"-->
+<!--                resultMap="imageResultMap"/> &lt;!&ndash; 新增子映射 &ndash;&gt;-->
+<!--    </resultMap>-->
+
+<!--    <resultMap id="imageResultMap" type="string">-->
+<!--        <result column="image_url" property=""/> &lt;!&ndash; 空 property 表示直接赋值 &ndash;&gt;-->
+<!--    </resultMap>-->
+    <resultMap id="withImagesResultMap" type="Pet" extends="baseResultMap">
+        <!-- 新增列前缀配置避免字段冲突 -->
+        <collection
+                property="petPics"
+                ofType="string"
+                columnPrefix="img_">  <!-- 新增列前缀 -->
+            <result column="image_url" property=""/> <!-- 空property直接赋值 -->   </collection>
+    </resultMap>
+
+    <!-- 基础映射需要明确指定列别名 -->
+    <resultMap id="baseResultMap" type="Pet">
+        <id column="petId" property="petId"/>
+        <result column="petName" property="petName"/>
+        <result column="petSex" property="petSex"/>
+        <result column="petSub" property="petSub"/>
+        <result column="petType" property="petType"/>
+        <result column="petBir" property="petBir"/>
+        <result column="petDetail" property="petDetail"/>
+        <result column="petPic" property="petPic"/>
+        <result column="petState" property="petState"/>
+    </resultMap>
+
+
+
+    <select id="findWithImagesById" resultMap="withImagesResultMap">
+        SELECT
+            p.*,
+        i.image_url AS img_image_url  <!-- 必须使用列前缀 -->
+        FROM t_pet p
+                 LEFT JOIN pet_images i ON p.petId = i.pet_id
+        WHERE p.petId = #{id}
+--         ORDER BY p.petId
+    </select>
+
+
+
+
+    <!-- 删除旧图片 -->
+    <delete id="deleteImagesByPetId">
+        DELETE FROM pet_images
+        WHERE pet_id = #{petId}
+    </delete>
+    <!-- 批量插入 -->
+    <insert id="batchInsertImages">
+        INSERT INTO pet_images (pet_id, image_url)
+        VALUES
+        <foreach collection="images" item="url" separator=",">
+            (#{petId}, #{url})
+        </foreach>
+    </insert>
+
+    <!-- 更新主图 -->
+    <update id="updateMainImage">
+        UPDATE t_pet
+        SET petPic = #{mainImage}
+        WHERE petId = #{petId}
+    </update>
+
 
 </mapper>
