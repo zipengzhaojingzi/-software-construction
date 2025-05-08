@@ -23,14 +23,25 @@
 <!-- 聊天窗口 -->
 <div class="chat-container" id="chatContainer">
     <div class="chat-header">
-        <span>宠物助手</span>
-        <button class="close-btn" id="closeBtn">×</button>
+        <div class="header-left">
+                <div>
+                <h3>宠物助手</h3>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn" id="historyBtn" title="历史记录">历史记录</button>
+            <button class="close-btn" id="closeBtn">×</button>
+        </div>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
         <input type="text" id="userInput" placeholder="输入你的问题..." >
         <button  id="sendBtn" onclick="sendMessage()">发送</button>
     </div>
+    <!-- 在chat.html的body起始位置添加隐藏字段 -->
+    <input type="hidden" id="sessionUserId" th:value="${session.Id}">
+    <input type="hidden" id="sessionUserName" th:value="${session.Name}">
+
 </div>
 
 <script  th:inline="javascript"   type="module">
@@ -62,9 +73,28 @@
             sendMessage();
         }
     });
+    function checkAuth() {
+        const sessionId = document.getElementById('sessionUserId')?.value;
+        return sessionId && sessionId !== 'null';
+    }
 
+    function showLoginAlert() {
+        const messagesDiv = document.getElementById('chatMessages');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-warning';
+        alertDiv.innerHTML = `        请先<a href="/login" class="alert-link">登录</a>
+        或<a href="/register" class="alert-link">注册</a>
+        后使用聊天功能
+    `;
+        messagesDiv.appendChild(alertDiv);
+    }
     // 发送消息到后端
     async function sendMessage() {
+        // 新增认证检查
+        if (!checkAuth()) {
+            showLoginAlert();
+            return;
+        }
         const input = document.getElementById('userInput');
         const prompt = input.value.trim();
         const sendBtn = document.getElementById('sendBtn');
@@ -85,10 +115,11 @@
         appendMessage(prompt, 'user');
 
         showLoading();
+        const uid = getCurrentUserId();
 
         try {
             // 调用后端接口（需启动 Spring Boot 服务）
-            const response = await fetch('http://localhost:8080/ai/chat?prompt=' + encodeURIComponent(prompt), {
+            const response = await fetch('http://localhost:8080/ai/chat/'+uid+'/prompt=' + encodeURIComponent(prompt), {
                 method: 'POST'
             });
 
@@ -236,6 +267,89 @@
             loadingElements[0].parentElement.remove();  // 移除加载动画元素
         }
     }
+    // 替换原有的getCurrentUserId函数
+    function getCurrentUserId() {
+        // 优先从服务端Session获取
+        const sessionId = document.getElementById('sessionUserId')?.value;
+
+        if (sessionId && sessionId !== 'null') {
+            // 同步到localStorage保持兼容
+            localStorage.setItem('userId', sessionId);
+            return sessionId;
+        }
+
+        // 未登录用户处理
+        let tempId = localStorage.getItem('tempUserId');
+        if (!tempId) {
+            tempId = generateGuestId();
+            localStorage.setItem('tempUserId', tempId);
+        }
+        return tempId;
+    }
+    //
+    // // 删除原有的DOMContentLoaded初始化逻辑
+    //
+    // // 在页面加载时初始化用户
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     if (!getCurrentUserId()) {
+    //         // 实现用户认证逻辑
+    //         localStorage.setItem('userId', generateGuestId());
+    //     }
+    // });
+    //
+    // function generateGuestId() {
+    //     return `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // }
+
+    document.getElementById('historyBtn').addEventListener('click', async () => {
+        const userId = getCurrentUserId();
+
+        // 添加认证检查
+        if (userId.startsWith('guest_')) {
+            appendMessage('历史记录功能需登录后使用', 'system');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/ai/chat/history?userId=${userId}`);
+            if (!response.ok) throw new Error('Failed to fetch');
+            const history = await response.json();
+            showHistoryModal(history);
+        } catch (error) {
+            appendMessage('获取历史记录失败', 'system');
+        }
+    });
+
+    function showHistoryModal(history) {
+        const messagesDiv = document.getElementById('chatMessages');
+
+        // 清空当前对话
+        messagesDiv.innerHTML = '';
+
+        // 按时间顺序显示历史记录
+        history.reverse().forEach(msg => {
+
+            // 添加带时间戳的消息
+            appendMessageCall(msg.content, msg.role);
+        });
+
+        // 滚动到底部
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // 新增带时间戳的消息添加方法
+    function appendMessageCall(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+
+        messageDiv.innerHTML = `
+        <div class="message-content">${processContent(text)}</div>
+    `;
+
+        document.getElementById('chatMessages').appendChild(messageDiv);
+    }
+
+
 
 
 

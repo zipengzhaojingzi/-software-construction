@@ -149,3 +149,75 @@
     margin-right: auto;
     border: 1px solid #eee;
 }
+
+/* 历史记录按钮样式 */
+#historyBtn {
+    /* 基础样式 */
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    margin-right: 10px;
+
+    /* 阴影效果 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+    /* 图标间距 */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 悬停效果 */
+#historyBtn:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* 激活状态 */
+#historyBtn.active {
+    background: #3d8b40;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 图标美化 */
+#historyBtn::before {
+    content: '📜';
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+#historyBtn.active::before {
+    content: '✅';
+    transform: rotate(360deg);
+}
+
+/* 头部右侧按钮布局 */
+.header-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* 关闭按钮样式统一 */
+#closeBtn {
+    background: #4CAF50;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    /* 新增居中样式 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#closeBtn:hover {
+    transform: rotate(90deg);
+}
